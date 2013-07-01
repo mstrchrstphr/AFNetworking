@@ -121,10 +121,12 @@ static char kAFImageRequestOperationObjectKey;
         } else {
             self.image = cachedImage;
         }
+        self.af_imageRequestOperation = nil;
     } else {
         if (placeholderImage) {
             self.image = placeholderImage;
         }
+
         AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc] initWithRequest:urlRequest];
         
         // If the user supplied a progress block
@@ -147,11 +149,18 @@ static char kAFImageRequestOperationObjectKey;
                 } else if (responseObject) {
                     self.image = responseObject;
                 }
+                if (self.af_imageRequestOperation == operation) {
+                    self.af_imageRequestOperation = nil;
+                }
             }
             
             [[[self class] af_sharedImageCache] cacheImage:responseObject forRequest:urlRequest];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             if ([urlRequest isEqual:[self.af_imageRequestOperation request]]) {
+                if (failure) {
+                    failure(operation.request, operation.response, error);
+                }
+                
                 if (self.af_imageRequestOperation == operation) {
                     self.af_imageRequestOperation = nil;
                 }
