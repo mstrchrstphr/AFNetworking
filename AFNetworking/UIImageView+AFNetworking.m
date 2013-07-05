@@ -122,8 +122,9 @@ static char kAFImageRequestOperationObjectKey;
         
         self.af_imageRequestOperation = nil;
     } else {
-        self.image = placeholderImage;
-        
+        if (placeholderImage) {
+            self.image = placeholderImage;
+        }
         AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc] initWithRequest:urlRequest];
         
         // If the user supplied a progress block
